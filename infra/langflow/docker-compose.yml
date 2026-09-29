@@ -1,0 +1,62 @@
+services:
+
+  postgres:
+    image: postgres:16-trixie
+    container_name: agritwin-langflow-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - langflow-postgres:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  langflow:
+    image: langflowai/langflow:1.12.3
+    container_name: agritwin-langflow
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "7860:7860"
+
+    environment:
+      LANGFLOW_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+
+      LANGFLOW_CONFIG_DIR: /app/langflow
+
+      LANGFLOW_AUTO_LOGIN: "false"
+
+      LANGFLOW_SUPERUSER: ${LANGFLOW_SUPERUSER}
+
+      LANGFLOW_SUPERUSER_PASSWORD: ${LANGFLOW_SUPERUSER_PASSWORD}
+
+      LANGFLOW_COMPONENTS_PATH: /app/custom_components
+
+    volumes:
+      - langflow-data:/app/langflow
+
+      - ../../langflow/custom_components:/app/custom_components
+
+
+volumes:
+
+  langflow-postgres:
+
+  langflow-data:

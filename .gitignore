@@ -1,0 +1,101 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Python y herramientas de desarrollo
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.python-version
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.pyre/
+.ruff_cache/
+
+# Paquetes generados
+*.egg-info/
+*.egg
+build/
+dist/
+wheelhouse/
+
+# Variables de entorno y secretos locales
+.env
+.env.*
+!.env.example
+!.env.*.example
+infra/langflow/.env
+
+# Bases de datos locales
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Modelos y artefactos generados
+data/models/*
+!data/models/.gitkeep
+artifacts/ml/*
+!artifacts/ml/.gitkeep
+mlruns/
+wandb/
+*.joblib
+*.pkl
+*.pickle
+*.onnx
+*.pt
+*.pth
+
+# Datos locales o temporales
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.tmp
+*.temp
+
+# Logs
+*.log
+logs/
+
+# Frontend (Vite / Node)
+digital_twin_frontend/node_modules/
+digital_twin_frontend/dist/
+digital_twin_frontend/dist-ssr/
+digital_twin_frontend/coverage/
+digital_twin_frontend/.vite/
+digital_twin_frontend/.env.local
+digital_twin_frontend/.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Docker
+docker-compose.override.yml
+
+# Jupyter
+.ipynb_checkpoints/

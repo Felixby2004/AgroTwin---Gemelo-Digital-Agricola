@@ -1,0 +1,619 @@
+
+/* =========================================================
+   PARCEL MEMBERS / PERMISSIONS
+   ========================================================= */
+
+.parcel-members-panel {
+  display: grid;
+  gap: 20px;
+  padding: 22px;
+  border-radius: 18px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.parcel-members-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 2px;
+}
+
+.parcel-members-panel .panel-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.parcel-members-panel .panel-header-title h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.parcel-members-panel .panel-header-title p {
+  margin: 3px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.35;
+  opacity: 0.68;
+}
+
+.parcel-members-panel .panel-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(22, 163, 74, 0.12);
+  color: rgb(22, 163, 74);
+}
+
+[data-theme="dark"] .parcel-members-panel .panel-icon {
+  color: rgb(134, 239, 172);
+}
+
+.members-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding-inline: 14px;
+}
+
+
+/* =========================================================
+   FEEDBACK / LOADING
+   ========================================================= */
+
+.members-loading {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  opacity: 0.72;
+}
+
+.members-spin {
+  animation: members-spin 0.9s linear infinite;
+}
+
+@keyframes members-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.members-message {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.members-message.error {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.members-message.success {
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+
+/* =========================================================
+   EXPLANATION
+   ========================================================= */
+
+.members-explainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.18));
+  border-radius: 13px;
+  background: var(--surface-soft, rgba(100, 116, 139, 0.045));
+}
+
+.members-explainer > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: rgb(22, 163, 74);
+}
+
+[data-theme="dark"] .members-explainer > svg {
+  color: rgb(134, 239, 172);
+}
+
+.members-explainer div {
+  display: grid;
+  gap: 3px;
+}
+
+.members-explainer strong {
+  font-size: 0.9rem;
+}
+
+.members-explainer span {
+  font-size: 0.84rem;
+  line-height: 1.45;
+  opacity: 0.68;
+}
+
+
+/* =========================================================
+   MEMBER LIST
+   ========================================================= */
+
+.members-list {
+  display: grid;
+  gap: 10px;
+}
+
+.members-empty {
+  min-height: 78px;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 0.88rem;
+  opacity: 0.64;
+  border: 1px dashed var(--border-color, rgba(100, 116, 139, 0.25));
+  border-radius: 13px;
+  background: var(--surface-soft, rgba(100, 116, 139, 0.025));
+}
+
+.member-row {
+  display: grid;
+  grid-template-columns:
+    minmax(230px, 1.15fr)
+    minmax(280px, 1.55fr)
+    auto;
+  gap: 18px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.18));
+  border-radius: 14px;
+  background: var(--surface-color, rgba(255, 255, 255, 0.72));
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.member-row:hover {
+  border-color: rgba(22, 163, 74, 0.28);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.member-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.member-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(22, 163, 74, 0.1);
+  color: rgb(22, 163, 74);
+}
+
+[data-theme="dark"] .member-avatar {
+  color: rgb(134, 239, 172);
+}
+
+.member-identity > div:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.member-identity strong {
+  font-size: 0.94rem;
+  line-height: 1.25;
+}
+
+.member-identity span {
+  font-size: 0.82rem;
+  opacity: 0.72;
+}
+
+.member-identity small {
+  font-size: 0.74rem;
+  opacity: 0.56;
+}
+
+.member-identity strong,
+.member-identity span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-role-control {
+  display: grid;
+  gap: 6px;
+}
+
+.member-role-control label,
+.add-member-grid label > span {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  font-weight: 800;
+  opacity: 0.62;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+}
+
+.member-role-control select,
+.add-member-grid select,
+.add-member-grid input {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.24));
+  border-radius: 11px;
+  outline: none;
+  background: var(--surface-color, #ffffff);
+  color: inherit;
+  font: inherit;
+  font-size: 0.88rem;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.member-role-control select:focus,
+.add-member-grid select:focus,
+.add-member-grid input:focus {
+  border-color: rgba(22, 163, 74, 0.55);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.member-role-control small,
+.add-member-grid small {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  opacity: 0.6;
+}
+
+.member-delete-button {
+  min-height: 42px;
+  padding: 9px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.055);
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+.member-delete-button:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.32);
+}
+
+.member-delete-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+
+/* =========================================================
+   ADD MEMBER
+   ========================================================= */
+
+.add-member-card {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.18));
+  border-radius: 15px;
+  background: var(--surface-soft, rgba(100, 116, 139, 0.035));
+}
+
+.add-member-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.add-member-heading > svg {
+  flex: 0 0 auto;
+  color: rgb(22, 163, 74);
+}
+
+[data-theme="dark"] .add-member-heading > svg {
+  color: rgb(134, 239, 172);
+}
+
+.add-member-heading > div {
+  display: grid;
+  gap: 2px;
+}
+
+.add-member-heading strong {
+  font-size: 0.94rem;
+}
+
+.add-member-heading span {
+  font-size: 0.8rem;
+  opacity: 0.64;
+}
+
+.add-member-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 1.45fr)
+    minmax(230px, 1fr)
+    auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.add-member-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.add-member-button {
+  min-height: 44px;
+  padding: 9px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  border-radius: 11px;
+  font-weight: 800;
+}
+
+.selected-role-permissions {
+  display: grid;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.selected-role-permissions > strong {
+  font-size: 0.85rem;
+}
+
+.selected-role-permissions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.selected-role-permissions span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 163, 74, 0.16);
+  background: rgba(22, 163, 74, 0.055);
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ROLE MATRIX
+   ========================================================= */
+
+.role-matrix {
+  padding-top: 3px;
+}
+
+.role-matrix summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style-position: outside;
+  font-size: 0.88rem;
+  font-weight: 800;
+  user-select: none;
+}
+
+.role-matrix summary:hover {
+  color: rgb(21, 128, 61);
+}
+
+[data-theme="dark"] .role-matrix summary:hover {
+  color: rgb(134, 239, 172);
+}
+
+.role-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.role-matrix article {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  min-height: 158px;
+  padding: 16px;
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.18));
+  border-radius: 14px;
+  background: var(--surface-color, rgba(255, 255, 255, 0.62));
+  overflow: hidden;
+}
+
+.role-matrix article::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: rgba(22, 163, 74, 0.55);
+}
+
+.role-matrix article > strong {
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.role-code {
+  width: fit-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--surface-soft, rgba(100, 116, 139, 0.07));
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.045em;
+  opacity: 0.62;
+}
+
+.role-matrix article p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  opacity: 0.66;
+}
+
+.role-matrix article > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.role-matrix article > div span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.16));
+  background: var(--surface-soft, rgba(100, 116, 139, 0.05));
+  font-size: 0.7rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+[data-theme="dark"] .member-row,
+[data-theme="dark"] .role-matrix article {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+[data-theme="dark"] .member-role-control select,
+[data-theme="dark"] .add-member-grid select,
+[data-theme="dark"] .add-member-grid input {
+  background: rgba(15, 23, 42, 0.2);
+}
+
+[data-theme="dark"] .selected-role-permissions span {
+  background: rgba(34, 197, 94, 0.09);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+  .member-row {
+    grid-template-columns:
+      minmax(220px, 1fr)
+      minmax(250px, 1.2fr);
+  }
+
+  .member-delete-button {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .add-member-grid {
+    grid-template-columns:
+      minmax(240px, 1.35fr)
+      minmax(220px, 1fr);
+  }
+
+  .add-member-button {
+    grid-column: 2;
+    justify-self: end;
+    min-width: 170px;
+  }
+}
+
+
+@media (max-width: 760px) {
+
+  .parcel-members-panel {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .parcel-members-panel .panel-header {
+    align-items: flex-start;
+  }
+
+  .member-row,
+  .add-member-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .member-delete-button,
+  .add-member-button {
+    grid-column: auto;
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  .role-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 520px) {
+
+  .parcel-members-panel .panel-header {
+    flex-direction: column;
+  }
+
+  .members-refresh-button {
+    width: 100%;
+  }
+
+  .members-explainer {
+    padding: 12px;
+  }
+
+  .member-row,
+  .add-member-card,
+  .role-matrix article {
+    padding: 13px;
+  }
+}
