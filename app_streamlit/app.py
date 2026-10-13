@@ -32,7 +32,9 @@ from engines.soil_hydraulics import (
 )
 from engines.recommendation import RecommendationEngine
 from engines.scenario import ScenarioEngine
-
+from app_streamlit.crisp_dm_panel import (
+    render_crisp_dm_panel,
+)
 
 # ---------------------------------------------------------
 # Configuración Streamlit
@@ -363,10 +365,16 @@ def build_engine_inventory() -> pd.DataFrame:
                 "Dónde se ejecuta": "Pipeline científico principal",
             },
             {
-                "Componente": "ML Random Forest",
-                "Estado": "Complementario",
-                "Función": "Predice humedad del suelo con incertidumbre y explicación.",
-                "Dónde se ejecuta": "API / frontend principal",
+                "Componente": "ML predictivo complementario",
+                "Estado": "CRISP-DM evaluado",
+                "Función": (
+                    "Predice humedad del suelo a +24 h; "
+                    "compara modelos, valida estadísticamente "
+                    "y genera explicabilidad."
+                ),
+                "Dónde se ejecuta": (
+                    "Laboratorio CRISP-DM / API complementaria"
+                ),
             },
             {
                 "Componente": "Conocimiento del agricultor",
@@ -880,9 +888,18 @@ if validation_errors:
 # Tabs principales
 # ---------------------------------------------------------
 
-tab_overview, tab_inputs, tab_weather, tab_engine, tab_results, tab_trace = st.tabs(
+(
+    tab_overview,
+    tab_crisp_dm,
+    tab_inputs,
+    tab_weather,
+    tab_engine,
+    tab_results,
+    tab_trace,
+) = st.tabs(
     [
         "🧭 Arquitectura",
+        "🧪 CRISP-DM",
         "📥 Entradas y evidencia",
         "🌦️ Datos externos",
         "🧠 Motor de inferencia",
@@ -989,6 +1006,14 @@ with tab_overview:
         hide_index=True,
     )
 
+
+# ---------------------------------------------------------
+# TAB CRISP-DM · ML predictivo complementario
+# ---------------------------------------------------------
+
+with tab_crisp_dm:
+
+    render_crisp_dm_panel()
 
 # ---------------------------------------------------------
 # TAB 2 · Entradas y evidencia

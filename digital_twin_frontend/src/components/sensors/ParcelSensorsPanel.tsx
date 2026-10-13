@@ -5,6 +5,7 @@ import {
   ExternalLink,
   Gauge,
   MapPin,
+  Plus,
   ShieldCheck,
   Thermometer,
   TriangleAlert,
@@ -43,7 +44,9 @@ import {
 
 interface ParcelSensorsPanelProps {
   sensors: Sensor[];
+  parcelId: string;
   parcelName: string;
+  canManageSensors?: boolean;
   unavailable?: boolean;
 }
 
@@ -329,7 +332,9 @@ function formatSensorDateTime(
 
 export function ParcelSensorsPanel({
   sensors,
+  parcelId,
   parcelName,
+  canManageSensors = false,
   unavailable = false,
 }: ParcelSensorsPanelProps) {
 
@@ -456,21 +461,54 @@ export function ParcelSensorsPanel({
         </div>
 
 
-        <Link
-          className="button-secondary parcel-sensors-link"
-          to="/sensors"
-        >
+        <div className="parcel-sensors-actions">
 
-          <ExternalLink
-            size={15}
-          />
+          {canManageSensors &&
+            !unavailable && (
 
-          {tr(
-            "Ver sensores",
-            "View sensors"
+            <Link
+              className="button-primary parcel-sensors-add"
+              to={
+                `/sensors?parcel_id=${encodeURIComponent(
+                  parcelId
+                )}&create=1`
+              }
+            >
+
+              <Plus
+                size={15}
+              />
+
+              {tr(
+                "Agregar sensor",
+                "Add sensor"
+              )}
+
+            </Link>
           )}
 
-        </Link>
+
+          <Link
+            className="button-secondary parcel-sensors-link"
+            to={
+              `/sensors?parcel_id=${encodeURIComponent(
+                parcelId
+              )}`
+            }
+          >
+
+            <ExternalLink
+              size={15}
+            />
+
+            {tr(
+              "Ver sensores",
+              "View sensors"
+            )}
+
+          </Link>
+
+        </div>
 
       </div>
 

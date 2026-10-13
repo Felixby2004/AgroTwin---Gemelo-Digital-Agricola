@@ -13,7 +13,6 @@ export interface Parcel {
 export interface ParcelCreateInput {
   name: string;
   crop_type: string | null;
-  area_ha: number | null;
   geometry_wkt?: string | null;
 }
 
@@ -21,11 +20,11 @@ export interface ParcelCreateInput {
 export interface ParcelUpdateInput {
   name: string;
   crop_type: string | null;
-  area_ha: number | null;
 }
 
 
-export async function getParcels(): Promise<Parcel[]> {
+export async function getParcels():
+Promise<Parcel[]> {
 
   const response =
     await api.get<Parcel[]>(
@@ -94,7 +93,8 @@ export interface ParcelMapFeature {
     coordinates: unknown;
   };
 
-  properties: ParcelMapProperties;
+  properties:
+    ParcelMapProperties;
 }
 
 
@@ -108,7 +108,9 @@ export async function getParcelMap():
 Promise<ParcelMapFeatureCollection> {
 
   const response =
-    await api.get<ParcelMapFeatureCollection>(
+    await api.get<
+      ParcelMapFeatureCollection
+    >(
       "/parcels/map"
     );
 
@@ -125,8 +127,9 @@ export interface ParcelGeometryResponse {
     coordinates:
       number[][][];
   };
-}
 
+  area_ha: number | null;
+}
 
 
 export async function getParcelGeometry(
@@ -134,7 +137,9 @@ export async function getParcelGeometry(
 ): Promise<ParcelGeometryResponse> {
 
   const response =
-    await api.get<ParcelGeometryResponse>(
+    await api.get<
+      ParcelGeometryResponse
+    >(
       `/parcels/${parcelId}/geometry`
     );
 
@@ -153,7 +158,9 @@ export async function updateParcelGeometry(
 ): Promise<ParcelGeometryResponse> {
 
   const response =
-    await api.put<ParcelGeometryResponse>(
+    await api.put<
+      ParcelGeometryResponse
+    >(
       `/parcels/${parcelId}/geometry`,
       {
         geometry,

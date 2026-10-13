@@ -5,12 +5,21 @@ import {
 } from "react";
 
 import {
+  isAxiosError,
+} from "axios";
+
+import {
+  useSearchParams,
+} from "react-router-dom";
+
+import {
   Activity,
   Clock3,
   Cpu,
   Droplets,
   Gauge,
   MapPin,
+  Plus,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -21,8 +30,10 @@ import {
 } from "lucide-react";
 
 import {
+  createSensor,
   getSensors,
   type Sensor,
+  type SensorCreateInput,
   type SensorOperationalStatus,
 } from "../api/sensors";
 
@@ -34,6 +45,10 @@ import {
 import {
   SensorDetails,
 } from "../components/sensors/SensorDetails";
+
+import {
+  SensorForm,
+} from "../components/sensors/SensorForm";
 
 import {
   useLanguage,
@@ -404,7 +419,14 @@ export function SensorsPage() {
 
   const {
     t,
+    tr,
   } = useLanguage();
+
+
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
 
 
   const [
@@ -475,6 +497,46 @@ export function SensorsPage() {
   ] = useState<
     Sensor | null
   >(null);
+
+
+  const [
+    showCreateSensor,
+    setShowCreateSensor,
+  ] = useState(
+    searchParams.get(
+      "create"
+    ) === "1"
+  );
+
+
+  const [
+    creatingSensor,
+    setCreatingSensor,
+  ] = useState(false);
+
+
+  const [
+    createError,
+    setCreateError,
+  ] = useState("");
+
+
+  const [
+    createMessage,
+    setCreateMessage,
+  ] = useState("");
+
+
+  const requestedParcelId =
+    searchParams.get(
+      "parcel_id"
+    ) ?? "";
+
+
+  const requestedCreate =
+    searchParams.get(
+      "create"
+    ) === "1";
 
 
   const loadData =
@@ -570,6 +632,187 @@ export function SensorsPage() {
     },
     []
   );
+
+
+  useEffect(
+    () => {
+
+      if (
+        requestedCreate
+      ) {
+        setSelectedSensor(
+          null
+        );
+
+        setCreateError("");
+        setCreateMessage("");
+
+        setShowCreateSensor(
+          true
+        );
+      }
+
+    },
+    [
+      requestedCreate,
+    ]
+  );
+
+
+  useEffect(
+    () => {
+
+      if (
+        requestedParcelId
+      ) {
+        setParcelFilter(
+          requestedParcelId
+        );
+      }
+
+    },
+    [
+      requestedParcelId,
+    ]
+  );
+
+
+  const openCreateSensor =
+    () => {
+
+      setSelectedSensor(
+        null
+      );
+
+      setCreateError("");
+      setCreateMessage("");
+
+      setShowCreateSensor(
+        true
+      );
+    };
+
+
+  const closeCreateSensor =
+    () => {
+
+      setShowCreateSensor(
+        false
+      );
+
+      setCreateError("");
+
+      const next =
+        new URLSearchParams(
+          searchParams
+        );
+
+      next.delete(
+        "create"
+      );
+
+      next.delete(
+        "parcel_id"
+      );
+
+      setSearchParams(
+        next,
+        {
+          replace: true,
+        }
+      );
+    };
+
+
+  const registerSensor =
+    async (
+      payload: SensorCreateInput
+    ) => {
+
+      try {
+        setCreatingSensor(
+          true
+        );
+
+        setCreateError("");
+        setCreateMessage("");
+
+        const created =
+          await createSensor(
+            payload
+          );
+
+        setSensors(
+          (current) => [
+            created,
+            ...current.filter(
+              (sensor) =>
+                sensor.sensor_id !==
+                created.sensor_id
+            ),
+          ]
+        );
+
+        setParcelFilter(
+          created.parcel_id
+        );
+
+        setCreateMessage(
+          tr(
+            `Sensor "${created.name}" registrado correctamente. Permanecerá sin datos hasta recibir su primera lectura real.`,
+            `Sensor "${created.name}" registered successfully. It will remain without data until its first real reading arrives.`
+          )
+        );
+
+        closeCreateSensor();
+
+      } catch (
+        requestError
+      ) {
+
+        if (
+          isAxiosError(
+            requestError
+          )
+        ) {
+
+          const detail =
+            requestError
+              .response
+              ?.data
+              ?.detail;
+
+          if (
+            typeof detail ===
+            "string"
+          ) {
+            setCreateError(
+              detail
+            );
+          } else {
+            setCreateError(
+              tr(
+                "No se pudo registrar el sensor. Verifica tus permisos y los datos ingresados.",
+                "The sensor could not be registered. Check your permissions and the entered data."
+              )
+            );
+          }
+
+        } else {
+          setCreateError(
+            tr(
+              "No se pudo registrar el sensor.",
+              "The sensor could not be registered."
+            )
+          );
+        }
+
+      } finally {
+        setCreatingSensor(
+          false
+        );
+      }
+    };
 
 
   const parcelMap =
@@ -819,31 +1062,62 @@ export function SensorsPage() {
         </div>
 
 
-        <button
-          type="button"
-          className="button-secondary sensors-refresh-button"
-          onClick={() =>
-            void loadData(
-              false
-            )
-          }
-          disabled={
-            refreshing
-          }
-        >
-          <RefreshCw
-            size={16}
-            className={
-              refreshing
-                ? "sensor-spin"
-                : ""
-            }
-          />
+        <div className="sensors-header-actions">
 
-          {refreshing
-            ? t("sensors.refreshing")
-            : t("sensors.refresh")}
-        </button>
+          <button
+            type="button"
+            className="button-primary sensors-new-button"
+            onClick={
+              openCreateSensor
+            }
+            disabled={
+              parcels.length === 0
+            }
+            title={
+              parcels.length === 0
+                ? tr(
+                    "Necesitas al menos una parcela disponible.",
+                    "You need at least one available parcel."
+                  )
+                : undefined
+            }
+          >
+            <Plus size={16} />
+
+            {tr(
+              "Nuevo sensor",
+              "New sensor"
+            )}
+          </button>
+
+
+          <button
+            type="button"
+            className="button-secondary sensors-refresh-button"
+            onClick={() =>
+              void loadData(
+                false
+              )
+            }
+            disabled={
+              refreshing
+            }
+          >
+            <RefreshCw
+              size={16}
+              className={
+                refreshing
+                  ? "sensor-spin"
+                  : ""
+              }
+            />
+
+            {refreshing
+              ? t("sensors.refreshing")
+              : t("sensors.refresh")}
+          </button>
+
+        </div>
 
       </section>
 
@@ -852,6 +1126,15 @@ export function SensorsPage() {
 
         <div className="error">
           {error}
+        </div>
+
+      )}
+
+
+      {createMessage && (
+
+        <div className="sensor-create-success">
+          {createMessage}
         </div>
 
       )}
@@ -1330,6 +1613,62 @@ export function SensorsPage() {
 
         </section>
 
+      )}
+
+
+      {showCreateSensor && (
+
+        <div
+          className="sensor-modal-backdrop"
+          role="presentation"
+          onMouseDown={(
+            event
+          ) => {
+
+            if (
+              event.target ===
+              event.currentTarget &&
+              !creatingSensor
+            ) {
+              closeCreateSensor();
+            }
+          }}
+        >
+
+          <div
+            className="sensor-create-modal-shell"
+            role="dialog"
+            aria-modal="true"
+            aria-label={tr(
+              "Registrar sensor",
+              "Register sensor"
+            )}
+          >
+
+            <SensorForm
+              parcels={
+                parcels
+              }
+              initialParcelId={
+                requestedParcelId
+              }
+              submitting={
+                creatingSensor
+              }
+              errorMessage={
+                createError
+              }
+              onCancel={
+                closeCreateSensor
+              }
+              onSubmit={
+                registerSensor
+              }
+            />
+
+          </div>
+
+        </div>
       )}
 
 

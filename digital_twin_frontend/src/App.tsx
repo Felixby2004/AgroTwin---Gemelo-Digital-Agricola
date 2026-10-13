@@ -21,6 +21,10 @@ import {
 } from "./components/Layout";
 
 import {
+  AgriTwinAssistant,
+} from "./components/chat/AgriTwinAssistant";
+
+import {
   LoginPage,
 } from "./pages/LoginPage";
 
@@ -84,7 +88,10 @@ function App() {
             <Route
               element={
                 <ProtectedRoute>
-                  <Layout />
+                  <>
+                    <Layout />
+                    <AgriTwinAssistant />
+                  </>
                 </ProtectedRoute>
               }
             >

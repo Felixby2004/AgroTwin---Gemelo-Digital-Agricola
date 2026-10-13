@@ -99,7 +99,6 @@ class ParcelRepository:
         parcel_id: str,
         name: str,
         crop_type: str | None = None,
-        area_ha: float | None = None,
     ) -> ParcelModel | None:
 
         item = self.get_by_id(
@@ -109,9 +108,11 @@ class ParcelRepository:
         if item is None:
             return None
 
+
         item.name = (
             name.strip()
         )
+
 
         item.crop_type = (
             crop_type.strip()
@@ -119,14 +120,17 @@ class ParcelRepository:
             else None
         )
 
-        item.area_ha = (
-            area_ha
-        )
+
+        # IMPORTANTE:
+        # area_ha NO se modifica aquí.
+        #
+        # Es un atributo derivado exclusivamente
+        # de la geometría espacial de la parcela.
+
 
         self.session.flush()
 
         return item
-
 
     # ==================================================
     # GET ONE GEOMETRY AS GEOJSON
@@ -292,7 +296,7 @@ class ParcelRepository:
 
 
     # ==================================================
-    # UPDATE PARCEL GEOMETRY
+    # UPDATE PARCEL GEOMETRY + DERIVED AREA
     # ==================================================
 
     def update_geometry_geojson(
@@ -329,7 +333,9 @@ class ParcelRepository:
                 list,
             )
             or
-            len(coordinates) == 0
+            len(
+                coordinates
+            ) == 0
         ):
 
             raise ValueError(
@@ -349,7 +355,9 @@ class ParcelRepository:
                 list,
             )
             or
-            len(exterior_ring) < 4
+            len(
+                exterior_ring
+            ) < 4
         ):
 
             raise ValueError(
@@ -363,6 +371,10 @@ class ParcelRepository:
             geometry
         )
 
+
+        # --------------------------------------------------
+        # VALIDATE GEOMETRY
+        # --------------------------------------------------
 
         validation = (
             self.session
@@ -431,25 +443,51 @@ class ParcelRepository:
             )
 
 
+        # --------------------------------------------------
+        # SAVE GEOMETRY
+        #
+        # EPSG:4326 geometry itself is angular.
+        #
+        # Casting the polygon to PostGIS geography makes
+        # ST_Area return square metres on the ellipsoid.
+        #
+        # 1 hectare = 10 000 m².
+        # --------------------------------------------------
+
         result = (
             self.session
             .execute(
                 text(
                     """
+                    WITH prepared AS (
+                        SELECT
+                            ST_SetSRID(
+                                ST_GeomFromGeoJSON(
+                                    :geometry_json
+                                ),
+                                4326
+                            ) AS geom
+                    )
+
                     UPDATE parcels
 
-                    SET geometry =
-                        ST_SetSRID(
-                            ST_GeomFromGeoJSON(
-                                :geometry_json
-                            ),
-                            4326
-                        )
+                    SET
+                        geometry =
+                            prepared.geom,
 
-                    WHERE id =
+                        area_ha =
+                            ST_Area(
+                                prepared.geom::geography
+                            )
+                            /
+                            10000.0
+
+                    FROM prepared
+
+                    WHERE parcels.id =
                         :parcel_id
 
-                    RETURNING id
+                    RETURNING parcels.id
                     """
                 ),
                 {
@@ -485,7 +523,9 @@ class ParcelRepository:
                     """
                     UPDATE parcels
 
-                    SET geometry = NULL
+                    SET
+                        geometry = NULL,
+                        area_ha = NULL
 
                     WHERE id =
                         :parcel_id

@@ -4,6 +4,13 @@ from fastapi import (
     HTTPException,
 )
 
+from datetime import (
+    datetime,
+    timezone,
+)
+
+from uuid import uuid4
+
 from sqlalchemy.orm import Session
 
 from geoalchemy2.elements import (
@@ -46,8 +53,8 @@ from database.models.identity import (
 from twin.identity import (
     SystemRole,
     ParcelPermission,
+    ParcelRole,
 )
-
 
 from api.schemas.parcel_geometry import (
     ParcelGeometryRead,
@@ -102,45 +109,124 @@ def _visible_parcel_ids(
 )
 def create_parcel(
     payload: ParcelCreate,
+
     current_user: UserModel = Depends(
         get_current_user
     ),
+
     db: Session = Depends(
         get_db
     ),
 ):
 
-    _ = current_user
-
-    repo = ParcelRepository(
-        db
+    parcel_repo = (
+        ParcelRepository(
+            db
+        )
     )
 
 
-    parcel = repo.create(
-        name=payload.name,
-        crop_type=payload.crop_type,
-        area_ha=payload.area_ha,
-        geometry=(
-            WKTElement(
-                payload.geometry_wkt,
-                srid=4326,
+    membership_repo = (
+        ParcelMembershipRepository(
+            db
+        )
+    )
+
+
+    try:
+
+        # ---------------------------------------------
+        # CREATE PARCEL
+        # ---------------------------------------------
+
+        parcel = (
+            parcel_repo.create(
+                name=
+                    payload.name,
+
+                crop_type=
+                    payload.crop_type,
+
+                # El área es derivada del polígono.
+                area_ha=
+                    None,
+
+                geometry=(
+                    WKTElement(
+                        payload.geometry_wkt,
+                        srid=4326,
+                    )
+                    if payload.geometry_wkt
+                    else None
+                ),
             )
-            if payload.geometry_wkt
-            else None
-        ),
-    )
+        )
 
 
-    db.commit()
-
-    db.refresh(
-        parcel
-    )
+        # ParcelRepository.create() ejecuta flush(),
+        # por lo que parcel.id ya existe aquí.
 
 
-    return parcel
+        # ---------------------------------------------
+        # CREATOR BECOMES OWNER
+        # ---------------------------------------------
 
+        membership_repo.create(
+            membership_id=(
+                "MEM-"
+                +
+                uuid4()
+                .hex[:12]
+                .upper()
+            ),
+
+            parcel_id=
+                parcel.id,
+
+            user_id=
+                current_user.id,
+
+            role=
+                ParcelRole
+                .OWNER
+                .value,
+
+            created_at=(
+                datetime.now(
+                    timezone.utc
+                )
+            ),
+
+            metadata={
+                "source":
+                    "PARCEL_CREATION",
+
+                "created_by":
+                    current_user.id,
+            },
+        )
+
+
+        # ---------------------------------------------
+        # ATOMIC COMMIT
+        # ---------------------------------------------
+
+        db.commit()
+
+
+        db.refresh(
+            parcel
+        )
+
+
+        return parcel
+
+
+    except Exception:
+
+        db.rollback()
+
+        raise
 
 # ======================================================
 # LIST PARCELS
@@ -364,7 +450,6 @@ def update_parcel(
         parcel_id=parcel_id,
         name=payload.name,
         crop_type=payload.crop_type,
-        area_ha=payload.area_ha,
     )
 
     if parcel is None:
@@ -450,6 +535,14 @@ def get_parcel_geometry(
     return ParcelGeometryRead(
         parcel_id=parcel_id,
         geometry=geometry,
+        area_ha=(
+            float(
+                parcel.area_ha
+            )
+            if parcel.area_ha
+            is not None
+            else None
+        ),
     )
 
 
@@ -530,9 +623,11 @@ def update_parcel_geometry(
             detail="Parcel not found.",
         )
 
-
     db.commit()
 
+    db.refresh(
+        parcel
+    )
 
     geometry = (
         repository
@@ -552,10 +647,17 @@ def update_parcel_geometry(
             ),
         )
 
-
     return ParcelGeometryRead(
         parcel_id=parcel_id,
         geometry=geometry,
+        area_ha=(
+            float(
+                parcel.area_ha
+            )
+            if parcel.area_ha
+            is not None
+            else None
+        ),
     )
 
 

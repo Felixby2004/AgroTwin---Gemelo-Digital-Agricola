@@ -1,0 +1,6 @@
+﻿{
+    "input_value":  "Comprueba si el backend de AgriTwin está disponible.",
+    "session_id":  "agritwin-test-001",
+    "output_type":  "chat",
+    "input_type":  "chat"
+}

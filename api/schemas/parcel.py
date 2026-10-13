@@ -23,11 +23,11 @@ class ParcelCreate(
         max_length=100,
     )
 
-    area_ha: float | None = Field(
-        default=None,
-        gt=0,
-    )
-
+    # Se conserva por compatibilidad con
+    # integraciones antiguas.
+    #
+    # El área nunca se recibe manualmente:
+    # será calculada a partir de la geometría.
     geometry_wkt: str | None = None
 
 
@@ -45,11 +45,6 @@ class ParcelUpdate(
         max_length=100,
     )
 
-    area_ha: float | None = Field(
-        default=None,
-        gt=0,
-    )
-
 
 class ParcelRead(
     APIModel
@@ -61,6 +56,8 @@ class ParcelRead(
 
     crop_type: str | None
 
+    # Read-only desde el punto de vista
+    # de la API de parcelas.
     area_ha: float | None
 
     created_at: datetime

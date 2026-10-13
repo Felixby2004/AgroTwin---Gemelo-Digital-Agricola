@@ -21,13 +21,6 @@ interface Props {
 }
 
 
-interface ChartPoint {
-  timestamp: number;
-
-  value: number;
-}
-
-
 function formatTime(
   timestamp: number
 ): string {
@@ -122,6 +115,8 @@ export function SoilMoistureHistoryChart({
 
 
         const futureTimestamp =
+          forecast !== null
+          &&
           forecastReference !== null
           &&
           Number.isFinite(

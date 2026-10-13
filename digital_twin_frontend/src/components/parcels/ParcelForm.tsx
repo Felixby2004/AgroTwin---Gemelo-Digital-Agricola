@@ -4,6 +4,7 @@ import {
 } from "react";
 
 import {
+  MapPinned,
   Save,
   X,
 } from "lucide-react";
@@ -23,11 +24,14 @@ import type {
 
 interface ParcelFormProps {
   parcel?: Parcel | null;
+
   submitting?: boolean;
+
   onCancel: () => void;
+
   onSubmit: (
     payload:
-      ParcelCreateInput
+      | ParcelCreateInput
       | ParcelUpdateInput
   ) => void | Promise<void>;
 }
@@ -59,18 +63,6 @@ export function ParcelForm({
 
 
   const [
-    areaHa,
-    setAreaHa,
-  ] = useState(
-    parcel?.area_ha != null
-      ? String(
-          parcel.area_ha
-        )
-      : ""
-  );
-
-
-  const [
     error,
     setError,
   ] = useState("");
@@ -83,19 +75,13 @@ export function ParcelForm({
         parcel?.name ?? ""
       );
 
+
       setCropCode(
         getCropCodeFromValue(
           parcel?.crop_type
         )
       );
 
-      setAreaHa(
-        parcel?.area_ha != null
-          ? String(
-              parcel.area_ha
-            )
-          : ""
-      );
 
       setError("");
 
@@ -133,28 +119,6 @@ export function ParcelForm({
       }
 
 
-      const numericArea =
-        Number(
-          areaHa
-        );
-
-
-      if (
-        !Number.isFinite(
-          numericArea
-        )
-        ||
-        numericArea <= 0
-      ) {
-
-        setError(
-          "Ingresa un área válida mayor que cero."
-        );
-
-        return;
-      }
-
-
       setError("");
 
 
@@ -167,9 +131,6 @@ export function ParcelForm({
             getCropBackendValue(
               cropCode
             ),
-
-          area_ha:
-            numericArea,
         }
       );
     };
@@ -181,6 +142,10 @@ export function ParcelForm({
         crop.code ===
         cropCode
     );
+
+
+  const officialArea =
+    parcel?.area_ha ?? null;
 
 
   return (
@@ -198,7 +163,7 @@ export function ParcelForm({
           </strong>
 
           <span>
-            Registre los datos básicos. La geometría se administra después desde el mapa.
+            Registra los datos básicos. El área se calculará automáticamente al delimitar la parcela en el mapa.
           </span>
 
         </div>
@@ -295,39 +260,38 @@ export function ParcelForm({
         </label>
 
 
-        <label>
+        <div className="parcel-area-derived-card">
 
-          Área
+          <div className="parcel-area-derived-icon">
+            <MapPinned size={18} />
+          </div>
 
-          <div className="parcel-area-input">
 
-            <input
-              type="number"
-              min="0.01"
-              step="0.01"
-              value={
-                areaHa
-              }
-              placeholder="Ej. 2.5"
-              onChange={
-                (
-                  event
-                ) =>
-                  setAreaHa(
-                    event
-                      .target
-                      .value
-                  )
-              }
-            />
+          <div>
 
             <span>
-              ha
+              Área de la parcela
             </span>
+
+            <strong>
+
+              {officialArea !== null
+                ? `${officialArea.toFixed(4)} ha`
+                : "Pendiente de delimitar"}
+
+            </strong>
+
+            <small>
+
+              {officialArea !== null
+                ? "Calculada automáticamente desde el polígono geográfico."
+                : "Se calculará al dibujar y guardar el límite en el mapa."}
+
+            </small>
 
           </div>
 
-        </label>
+        </div>
 
       </div>
 
@@ -336,7 +300,8 @@ export function ParcelForm({
 
         <div
           className={
-            selectedCrop.supportStatus === "SUPPORTED"
+            selectedCrop.supportStatus ===
+            "SUPPORTED"
               ? "crop-form-support supported"
               : "crop-form-support experimental"
           }
@@ -347,9 +312,12 @@ export function ParcelForm({
           </strong>
 
           <span>
-            {selectedCrop.supportStatus === "SUPPORTED"
+
+            {selectedCrop.supportStatus ===
+            "SUPPORTED"
               ? "Este cultivo tiene un perfil agronómico configurado en el motor actual."
               : "Puede registrarse y gestionarse, pero su perfil agronómico específico todavía está en soporte experimental."}
+
           </span>
 
         </div>

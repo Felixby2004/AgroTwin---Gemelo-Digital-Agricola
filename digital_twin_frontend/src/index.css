@@ -16501,3 +16501,729 @@ span {
       0.09
     );
 }
+
+/* ===================================================== */
+/* PARCEL AREA — DERIVED FROM GEOMETRY                   */
+/* ===================================================== */
+
+.parcel-area-derived-card {
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    10px 12px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    11px;
+
+  background:
+    #f8fbf9;
+}
+
+
+.parcel-area-derived-icon {
+  width: 38px;
+  height: 38px;
+
+  flex:
+    0 0 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius:
+    10px;
+
+  color:
+    var(--green-600);
+
+  background:
+    var(--green-100);
+}
+
+
+.parcel-area-derived-card > div:last-child {
+  min-width: 0;
+}
+
+
+.parcel-area-derived-card span,
+.parcel-area-derived-card strong,
+.parcel-area-derived-card small {
+  display: block;
+}
+
+
+.parcel-area-derived-card span {
+  color:
+    var(--text-secondary);
+
+  font-size:
+    11px;
+
+  font-weight:
+    650;
+}
+
+
+.parcel-area-derived-card strong {
+  margin-top: 3px;
+
+  color:
+    var(--text-main);
+
+  font-size:
+    14px;
+}
+
+
+.parcel-area-derived-card small {
+  margin-top: 3px;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    9px;
+
+  line-height:
+    1.35;
+}
+
+
+/* ===================================================== */
+/* MAP LIVE AREA                                         */
+/* ===================================================== */
+
+.parcel-map-editor-info {
+  min-width: 0;
+}
+
+
+.parcel-map-live-area {
+  margin-top: 7px;
+
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+}
+
+
+.parcel-map-live-area b {
+  color:
+    var(--green-700);
+
+  font-size:
+    13px;
+}
+
+
+.parcel-map-live-area small {
+  color:
+    var(--text-secondary);
+
+  font-size:
+    9px;
+}
+
+
+@media (
+  max-width: 1000px
+) {
+
+  .parcel-area-derived-card {
+    grid-column:
+      1 / -1;
+  }
+
+}
+
+
+@media (
+  max-width: 700px
+) {
+
+  .parcel-map-live-area {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap:
+      2px;
+  }
+
+}
+
+/* ===================================================== */
+/* PARCEL MAP — BASE LAYER SWITCHER                      */
+/* ===================================================== */
+
+.parcel-map-view-switcher {
+  position: absolute;
+
+  top: 18px;
+  right: 18px;
+
+  z-index: 650;
+
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px;
+
+  border:
+    1px solid
+    rgba(
+      203,
+      213,
+      225,
+      0.95
+    );
+
+  border-radius: 12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.94
+    );
+
+  box-shadow:
+    0 7px 22px
+    rgba(
+      15,
+      23,
+      42,
+      0.12
+    );
+
+  backdrop-filter:
+    blur(10px);
+
+  -webkit-backdrop-filter:
+    blur(10px);
+}
+
+
+/*
+ * Cuando se está delimitando una parcela,
+ * desplazamos el selector para que no choque
+ * con la barra del editor.
+ */
+.parcel-map-view-switcher.editing {
+  top: 88px;
+}
+
+
+.parcel-map-view-switcher button {
+  min-height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    0 10px;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background:
+    transparent;
+
+  color:
+    #64748b;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.parcel-map-view-switcher button:hover {
+  background:
+    #f1f5f9;
+
+  color:
+    #0f172a;
+}
+
+
+.parcel-map-view-switcher button.active {
+  background:
+    #ffffff;
+
+  color:
+    var(--green-700);
+
+  box-shadow:
+    0 2px 7px
+    rgba(
+      15,
+      23,
+      42,
+      0.12
+    );
+}
+
+
+.parcel-map-view-switcher button svg {
+  flex:
+    0 0 auto;
+}
+
+
+/* ===================================================== */
+/* DARK MODE                                             */
+/* ===================================================== */
+
+:root[data-theme="dark"]
+.parcel-map-view-switcher {
+
+  border-color:
+    var(--border);
+
+  background:
+    rgba(
+      22,
+      33,
+      50,
+      0.94
+    );
+}
+
+
+:root[data-theme="dark"]
+.parcel-map-view-switcher button {
+
+  color:
+    #94a3b8;
+}
+
+
+:root[data-theme="dark"]
+.parcel-map-view-switcher button:hover {
+
+  background:
+    #223148;
+
+  color:
+    #e2e8f0;
+}
+
+
+:root[data-theme="dark"]
+.parcel-map-view-switcher button.active {
+
+  background:
+    #26384f;
+
+  color:
+    #7dd3a7;
+}
+
+
+/* ===================================================== */
+/* RESPONSIVE                                            */
+/* ===================================================== */
+
+@media (
+  max-width: 700px
+) {
+
+  .parcel-map-view-switcher {
+    top: 12px;
+    right: 12px;
+  }
+
+
+  .parcel-map-view-switcher.editing {
+    top: 132px;
+  }
+
+
+  .parcel-map-view-switcher button {
+    min-width: 36px;
+
+    padding:
+      0 8px;
+  }
+
+
+  .parcel-map-view-switcher button span {
+    display: none;
+  }
+
+}
+
+/* ===================================================== */
+/* SENSOR REGISTRATION                                   */
+/* ===================================================== */
+
+.sensors-header-actions,
+.parcel-sensors-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.sensors-new-button,
+.parcel-sensors-add {
+  text-decoration: none;
+}
+
+.sensor-create-success {
+  padding: 11px 13px;
+  border: 1px solid #b9e7c9;
+  border-radius: 10px;
+  background: #effbf3;
+  color: #14753a;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.sensor-create-modal-shell {
+  width: min(820px, 94vw);
+  max-height: 90vh;
+  overflow: hidden;
+  border: 1px solid rgba(220, 226, 234, 0.95);
+  border-radius: 18px;
+  background: var(--panel-bg, #ffffff);
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.24),
+    0 8px 24px rgba(15, 23, 42, 0.12);
+  animation: sensor-modal-pop-in 0.18s ease-out;
+}
+
+.sensor-create-form {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  background: var(--panel-bg, #ffffff);
+}
+
+.sensor-create-form-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 21px 22px 17px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sensor-create-form-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sensor-create-form-icon {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #f2efff;
+  color: #694fd4;
+}
+
+.sensor-create-form-heading span {
+  display: block;
+  color: #745ed8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sensor-create-form-heading h2 {
+  margin: 3px 0 0;
+  color: var(--text-main);
+  font-size: 20px;
+}
+
+.sensor-create-form-heading p {
+  max-width: 580px;
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sensor-create-form-body {
+  overflow-y: auto;
+  padding: 20px 22px;
+}
+
+.sensor-create-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.sensor-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.sensor-form-field-full {
+  grid-column: 1 / -1;
+}
+
+.sensor-form-field > span,
+.sensor-variable-selector legend {
+  color: #34445c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sensor-form-field input,
+.sensor-form-field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: var(--text-main);
+  font-size: 13px;
+}
+
+.sensor-form-field input:focus,
+.sensor-form-field select:focus {
+  border-color: #8b6df2;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.09);
+}
+
+.sensor-form-field small {
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.sensor-variable-selector {
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+}
+
+.sensor-variable-selector legend {
+  padding: 0 5px;
+}
+
+.sensor-variable-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sensor-variable-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fafbfc;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.sensor-variable-option.selected {
+  border-color: #bdb0f5;
+  background: #f5f2ff;
+  color: #6349c9;
+}
+
+.sensor-variable-option input {
+  accent-color: #694fd4;
+}
+
+.sensor-location-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: #f7f8fc;
+  color: var(--text-main);
+}
+
+.sensor-location-heading svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #745ed8;
+}
+
+.sensor-location-heading strong,
+.sensor-location-heading span {
+  display: block;
+}
+
+.sensor-location-heading strong {
+  font-size: 12px;
+}
+
+.sensor-location-heading span {
+  margin-top: 3px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.sensor-active-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafbfc;
+  cursor: pointer;
+}
+
+.sensor-active-toggle input {
+  margin-top: 2px;
+  accent-color: var(--green-600);
+}
+
+.sensor-active-toggle strong,
+.sensor-active-toggle span {
+  display: block;
+}
+
+.sensor-active-toggle strong {
+  color: var(--text-main);
+  font-size: 12px;
+}
+
+.sensor-active-toggle span {
+  margin-top: 3px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.sensor-create-error {
+  margin-top: 15px;
+}
+
+.sensor-create-form-note {
+  margin-top: 15px;
+  padding: 11px 12px;
+  border: 1px solid #cfe2f7;
+  border-radius: 10px;
+  background: #f2f8ff;
+  color: #315f89;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.sensor-create-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 15px 22px 20px;
+  border-top: 1px solid var(--border);
+}
+
+:root[data-theme="dark"] .sensor-create-modal-shell,
+:root[data-theme="dark"] .sensor-create-form {
+  background: var(--panel-bg, #111827);
+}
+
+:root[data-theme="dark"] .sensor-form-field input,
+:root[data-theme="dark"] .sensor-form-field select,
+:root[data-theme="dark"] .sensor-variable-option,
+:root[data-theme="dark"] .sensor-active-toggle,
+:root[data-theme="dark"] .sensor-location-heading {
+  background: #172235;
+  color: var(--text-main);
+}
+
+:root[data-theme="dark"] .sensor-variable-option.selected {
+  background: #29234a;
+  border-color: #6f5bc4;
+  color: #c4b8ff;
+}
+
+:root[data-theme="dark"] .sensor-create-form-note {
+  background: #15283b;
+  border-color: #284b69;
+  color: #9dc6e8;
+}
+
+@media (max-width: 700px) {
+  .sensors-header-actions,
+  .parcel-sensors-actions {
+    width: 100%;
+  }
+
+  .sensors-header-actions > *,
+  .parcel-sensors-actions > * {
+    flex: 1;
+  }
+
+  .sensor-create-modal-shell {
+    width: 100%;
+    max-height: 94vh;
+    border-radius: 14px;
+  }
+
+  .sensor-create-form {
+    max-height: 94vh;
+  }
+
+  .sensor-create-form-grid,
+  .sensor-variable-options {
+    grid-template-columns: 1fr;
+  }
+
+  .sensor-create-form-header,
+  .sensor-create-form-body,
+  .sensor-create-form-actions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .sensor-create-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .sensor-create-form-actions button {
+    width: 100%;
+  }
+}

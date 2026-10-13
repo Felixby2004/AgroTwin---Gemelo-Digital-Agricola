@@ -227,6 +227,41 @@ def clean_numeric(
 
 
 # ======================================================
+# CLEAN GEOGRAPHIC COORDINATES
+# ======================================================
+
+def clean_latitude(
+    series: pd.Series,
+) -> pd.Series:
+
+    values = pd.to_numeric(
+        series,
+        errors="coerce",
+    )
+
+    return values.mask(
+        (values < -90)
+        |
+        (values > 90)
+    )
+
+
+def clean_longitude(
+    series: pd.Series,
+) -> pd.Series:
+
+    values = pd.to_numeric(
+        series,
+        errors="coerce",
+    )
+
+    return values.mask(
+        (values < -180)
+        |
+        (values > 180)
+    )
+
+# ======================================================
 # EXACT +24 H TARGET
 # ======================================================
 
@@ -324,10 +359,9 @@ def prepare_dataset(
         "station_id"
     ] = STATION
 
-
     result[
         "latitude"
-    ] = clean_numeric(
+    ] = clean_latitude(
         dataframe[
             "LATITUDE"
         ]
@@ -336,7 +370,7 @@ def prepare_dataset(
 
     result[
         "longitude"
-    ] = clean_numeric(
+    ] = clean_longitude(
         dataframe[
             "LONGITUDE"
         ]

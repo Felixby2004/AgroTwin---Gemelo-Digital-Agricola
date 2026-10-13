@@ -115,6 +115,10 @@ app.include_router(
     ml_predictions.router
 )
 
+from api.routers.langflow_tools import router as langflow_router
+
+app.include_router(langflow_router)
+
 @app.get("/")
 def root():
 
@@ -126,3 +130,10 @@ def root():
 
         "version": "0.1.0",
     }
+
+# =========================================================
+# LANGFLOW CHATBOT
+# =========================================================
+from api.routers.chatbot import router as chatbot_router
+
+app.include_router(chatbot_router)

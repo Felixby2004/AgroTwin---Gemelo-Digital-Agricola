@@ -34,6 +34,32 @@ export interface Sensor {
 }
 
 
+
+
+export type SensorVariable =
+  | "soil_moisture"
+  | "air_temperature"
+  | "relative_humidity"
+  | "rainfall"
+  | "flow_rate";
+
+
+export interface SensorCreateInput {
+  sensor_id: string;
+  parcel_id: string;
+  name: string;
+  sensor_type: string;
+  variables: SensorVariable[];
+  latitude: number | null;
+  longitude: number | null;
+  manufacturer: string | null;
+  model: string | null;
+  installed_at: string | null;
+  is_active: boolean;
+  metadata: Record<string, unknown>;
+}
+
+
 export interface SensorReadingHistoryItem {
   evidence_id: string;
   variable: string;
@@ -42,6 +68,22 @@ export interface SensorReadingHistoryItem {
   quality_score: number | null;
   status: string;
   observed_at: string | null;
+}
+
+
+
+
+export async function createSensor(
+  payload: SensorCreateInput
+): Promise<Sensor> {
+
+  const response =
+    await api.post<Sensor>(
+      "/sensors",
+      payload
+    );
+
+  return response.data;
 }
 
 

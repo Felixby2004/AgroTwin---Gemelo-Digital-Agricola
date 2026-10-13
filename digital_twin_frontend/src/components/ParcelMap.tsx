@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -19,7 +20,10 @@ import {
 
 import {
   Check,
+  Map as MapIcon,
+  Mountain,
   RotateCcw,
+  Satellite,
   Trash2,
   Undo2,
 } from "lucide-react";
@@ -56,6 +60,75 @@ interface ParcelMapProps {
   onCancelEdit?: () => void;
 }
 
+
+/* ===================================================== */
+/* BASE MAP VIEWS                                        */
+/* ===================================================== */
+
+type ParcelMapView =
+  | "MAP"
+  | "TERRAIN"
+  | "SATELLITE";
+
+
+interface ParcelBaseLayer {
+  label: string;
+  url: string;
+  attribution: string;
+  maxZoom: number;
+}
+
+
+const PARCEL_BASE_LAYERS:
+Record<
+  ParcelMapView,
+  ParcelBaseLayer
+> = {
+
+  MAP: {
+    label:
+      "Mapa",
+
+    url:
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+    attribution:
+      "&copy; OpenStreetMap contributors",
+
+    maxZoom:
+      19,
+  },
+
+
+  TERRAIN: {
+    label:
+      "Terreno",
+
+    url:
+      "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+
+    attribution:
+      "Map data &copy; OpenStreetMap contributors · Map style &copy; OpenTopoMap",
+
+    maxZoom:
+      17,
+  },
+
+
+  SATELLITE: {
+    label:
+      "Satélite",
+
+    url:
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+
+    attribution:
+      "Tiles &copy; Esri",
+      
+    maxZoom:
+      19,
+  },
+};
 
 /* ===================================================== */
 /* AUTOMATIC BOUNDS                                      */
@@ -171,6 +244,169 @@ function MapDrawingController({
 
 
 /* ===================================================== */
+/* LIVE POLYGON AREA                                     */
+/* ===================================================== */
+
+const EARTH_RADIUS_METERS =
+  6_378_137;
+
+
+/**
+ * Geodesic approximation for a polygon expressed
+ * as Leaflet [latitude, longitude] coordinates.
+ *
+ * This value is only a live preview.
+ *
+ * The authoritative area is recalculated by
+ * PostGIS when the geometry is persisted.
+ */
+function calculatePolygonAreaM2(
+  points: LatLngTuple[]
+): number {
+
+  if (
+    points.length <
+    3
+  ) {
+    return 0;
+  }
+
+
+  let total = 0;
+
+
+  for (
+    let index = 0;
+    index < points.length;
+    index += 1
+  ) {
+
+    const current =
+      points[index];
+
+
+    const next =
+      points[
+        (
+          index + 1
+        )
+        %
+        points.length
+      ];
+
+
+    const latitude1 =
+      current[0]
+      *
+      Math.PI
+      /
+      180;
+
+
+    const latitude2 =
+      next[0]
+      *
+      Math.PI
+      /
+      180;
+
+
+    const longitude1 =
+      current[1]
+      *
+      Math.PI
+      /
+      180;
+
+
+    const longitude2 =
+      next[1]
+      *
+      Math.PI
+      /
+      180;
+
+
+    let longitudeDelta =
+      longitude2
+      -
+      longitude1;
+
+
+    if (
+      longitudeDelta >
+      Math.PI
+    ) {
+
+      longitudeDelta -=
+        2
+        *
+        Math.PI;
+    }
+
+
+    if (
+      longitudeDelta <
+      -Math.PI
+    ) {
+
+      longitudeDelta +=
+        2
+        *
+        Math.PI;
+    }
+
+
+    total +=
+      longitudeDelta
+      *
+      (
+        2
+        +
+        Math.sin(
+          latitude1
+        )
+        +
+        Math.sin(
+          latitude2
+        )
+      );
+  }
+
+
+  return Math.abs(
+    total
+    *
+    EARTH_RADIUS_METERS
+    *
+    EARTH_RADIUS_METERS
+    /
+    2
+  );
+}
+
+
+function formatAreaM2(
+  value: number
+): string {
+
+  return new Intl
+    .NumberFormat(
+      "es-PE",
+      {
+        maximumFractionDigits:
+          value >= 1000
+            ? 0
+            : 2,
+      }
+    )
+    .format(
+      value
+    );
+}
+
+
+/* ===================================================== */
 /* MAP                                                   */
 /* ===================================================== */
 
@@ -184,6 +420,18 @@ export function ParcelMap({
   const navigate =
     useNavigate();
 
+  const [
+    mapView,
+    setMapView,
+  ] = useState<ParcelMapView>(
+    "MAP"
+  );
+
+
+  const activeBaseLayer =
+    PARCEL_BASE_LAYERS[
+      mapView
+    ];
 
   const [
     draftPoints,
@@ -210,6 +458,22 @@ export function ParcelMap({
   const editing =
     editingParcel !== null;
 
+  const draftAreaM2 =
+    useMemo(
+      () =>
+        calculatePolygonAreaM2(
+          draftPoints
+        ),
+      [
+        draftPoints,
+      ]
+    );
+
+
+  const draftAreaHa =
+    draftAreaM2
+    /
+    10_000;
 
   const geoJsonData =
     data as FeatureCollection;
@@ -372,19 +636,145 @@ export function ParcelMap({
 
     <div className="parcel-map-container">
 
+      <div
+        className={
+          editing
+            ? "parcel-map-view-switcher editing"
+            : "parcel-map-view-switcher"
+        }
+        role="group"
+        aria-label="Cambiar vista del mapa"
+      >
+
+        <button
+          type="button"
+          className={
+            mapView === "MAP"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setMapView(
+              "MAP"
+            )
+          }
+          title="Vista de mapa"
+        >
+
+          <MapIcon
+            size={15}
+          />
+
+          <span>
+            Mapa
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          className={
+            mapView === "TERRAIN"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setMapView(
+              "TERRAIN"
+            )
+          }
+          title="Vista de terreno"
+        >
+
+          <Mountain
+            size={15}
+          />
+
+          <span>
+            Terreno
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          className={
+            mapView === "SATELLITE"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setMapView(
+              "SATELLITE"
+            )
+          }
+          title="Vista satelital"
+        >
+
+          <Satellite
+            size={15}
+          />
+
+          <span>
+            Satélite
+          </span>
+
+        </button>
+
+      </div>
+
       {editing && (
 
         <div className="parcel-map-editor">
 
-          <div>
+          <div className="parcel-map-editor-info">
 
             <strong>
-              Editando ubicación
+              Delimitando parcela
             </strong>
 
             <span>
               {editingParcel.name}
             </span>
+
+
+            <div className="parcel-map-live-area">
+
+              {draftPoints.length >= 3 ? (
+
+                <>
+
+                  <b>
+                    {draftAreaHa.toFixed(4)} ha
+                  </b>
+
+                  <small>
+                    {formatAreaM2(
+                      draftAreaM2
+                    )} m² · estimación en tiempo real
+                  </small>
+
+                </>
+
+              ) : (
+
+                <>
+
+                  <b>
+                    Área pendiente
+                  </b>
+
+                  <small>
+                    Marca al menos tres vértices
+                  </small>
+
+                </>
+
+              )}
+
+            </div>
 
           </div>
 
@@ -498,14 +888,22 @@ export function ParcelMap({
       >
 
         <TileLayer
+          key={
+            mapView
+          }
           attribution={
-            "&copy; OpenStreetMap contributors"
+            activeBaseLayer
+              .attribution
           }
           url={
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            activeBaseLayer
+              .url
+          }
+          maxZoom={
+            activeBaseLayer
+              .maxZoom
           }
         />
-
 
         <GeoJSON
           key={
@@ -559,17 +957,11 @@ export function ParcelMap({
               "Parcela";
 
 
-            const crop =
-              properties.crop_type ??
-              "Cultivo no definido";
-
-
             const area =
-              typeof properties
-                .area_ha ===
+              typeof properties.area_ha ===
               "number"
-                ? `${properties.area_ha} ha`
-                : "Área no definida";
+                ? `${properties.area_ha.toFixed(4)} ha`
+                : "Área pendiente de delimitación";
 
 
             layer.bindTooltip(
@@ -579,10 +971,6 @@ export function ParcelMap({
                   <strong>
                     ${name}
                   </strong>
-
-                  <span>
-                    ${crop}
-                  </span>
 
                   <span>
                     ${area}

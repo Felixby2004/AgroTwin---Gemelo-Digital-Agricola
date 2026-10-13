@@ -1168,6 +1168,13 @@ export function ParcelDetailPage() {
     );
 
 
+  const canManageSensors =
+    hasParcelPermission(
+      permissions,
+      "EDIT"
+    );
+
+
   const canRespondRecommendation =
     hasParcelPermission(
       permissions,
@@ -1744,8 +1751,14 @@ export function ParcelDetailPage() {
             sensors={
               sensors
             }
+            parcelId={
+              parcel.id
+            }
             parcelName={
               parcel.name
+            }
+            canManageSensors={
+              canManageSensors
             }
             unavailable={
               sensorsUnavailable

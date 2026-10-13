@@ -555,30 +555,69 @@ export function ParcelsPage() {
       }
 
 
-      await updateParcelGeometry(
-        editingParcel.id,
-        {
-          type:
-            "Polygon",
+      const result =
+        await updateParcelGeometry(
+          editingParcel.id,
+          {
+            type:
+              "Polygon",
 
-          coordinates,
-        }
-      );
+            coordinates,
+          }
+        );
 
+
+      /*
+      * Refresh both sources:
+      *
+      * 1. Parcel list:
+      *    updates the official area_ha.
+      *
+      * 2. GeoJSON map:
+      *    updates geometry + tooltip area.
+      */
+
+      await reloadParcels();
 
       await refreshMap();
 
 
-      setMapMessage(
-        `Geometría de "${editingParcel.name}" guardada correctamente.`
-      );
+      if (
+        result.area_ha !== null
+      ) {
+
+        const squareMeters =
+          result.area_ha
+          *
+          10_000;
+
+
+        setMapMessage(
+          `Parcela "${editingParcel.name}" delimitada correctamente. `
+          +
+          `Área oficial: ${result.area_ha.toFixed(4)} ha `
+          +
+          `(${squareMeters.toLocaleString(
+            "es-PE",
+            {
+              maximumFractionDigits:
+                2,
+            }
+          )} m²).`
+        );
+
+      } else {
+
+        setMapMessage(
+          `Geometría de "${editingParcel.name}" guardada correctamente.`
+        );
+      }
 
 
       setEditingParcelId(
         ""
       );
     };
-
 
   const reloadParcels =
     async () => {
@@ -716,8 +755,21 @@ export function ParcelsPage() {
 
         } else {
 
-          await createParcel(
-            payload
+          const createdParcel =
+            await createParcel(
+              payload
+            );
+
+
+          setEditingParcelId(
+            createdParcel.id
+          );
+
+
+          setMapMessage(
+            `Parcela "${createdParcel.name}" creada. `
+            +
+            "Ahora delimita su área haciendo clic sobre el mapa."
           );
 
 
@@ -1308,10 +1360,9 @@ export function ParcelsPage() {
                           language
                         )}
 
-                        {parcel
-                          .area_ha
-                          ? ` · ${parcel.area_ha} ha`
-                          : ""}
+                        {parcel.area_ha !== null
+                          ? ` · ${parcel.area_ha.toFixed(4)} ha`
+                          : " · Área pendiente"}
 
                       </span>
 

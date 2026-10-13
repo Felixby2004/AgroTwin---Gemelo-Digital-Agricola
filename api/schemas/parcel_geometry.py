@@ -32,3 +32,7 @@ class ParcelGeometryRead(
         str,
         Any,
     ]
+
+    # Área oficial calculada por PostGIS
+    # a partir de la geometría almacenada.
+    area_ha: float | None = None
