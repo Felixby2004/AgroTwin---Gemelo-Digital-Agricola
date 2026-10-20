@@ -1,3 +1,4 @@
+from services.publication_service import PublicationService
 from io import BytesIO
 
 
@@ -5,6 +6,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Query,
 )
 
 from fastapi.responses import (
@@ -20,6 +22,7 @@ from api.dependencies import (
 
 from api.auth_dependencies import (
     get_current_user,
+    require_admin,
     check_parcel_permission,
 )
 
@@ -427,6 +430,9 @@ def preview_pdf(
     )
 
 
+    if current_user.system_role == "ADMIN":
+        report["publication_admin"] = True
+
     content = (
         pdf_service.generate(
             report
@@ -510,6 +516,9 @@ def download_pdf(
         )
     )
 
+
+    if current_user.system_role == "ADMIN":
+        report["publication_admin"] = True
 
     content = (
         pdf_service.generate(
@@ -595,6 +604,9 @@ def download_docx(
         )
     )
 
+
+    if current_user.system_role == "ADMIN":
+        report["publication_admin"] = True
 
     content = (
         docx_service.generate(
@@ -683,6 +695,9 @@ def download_xlsx(
     )
 
 
+    if current_user.system_role == "ADMIN":
+        report["publication_admin"] = True
+
     content = (
         excel_service.generate(
             report
@@ -716,3 +731,31 @@ def download_xlsx(
                 )
         },
     )
+# ADMIN publication tools use existing parcel and consent checks.
+
+
+@router.get('/parcels/{parcel_id}/publication')
+def publication_preview(
+    parcel_id: str,
+    current_user: UserModel = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    _ensure_parcel(db=db, parcel_id=parcel_id)
+    check_parcel_permission(db=db, current_user=current_user, parcel_id=parcel_id, permission=ParcelPermission.VIEW)
+    return PublicationService().describe(_build_report(db=db, parcel_id=parcel_id))
+
+
+@router.get('/parcels/{parcel_id}/publication.zip')
+def publication_download(
+    parcel_id: str,
+    width_mm: float = Query(default=85, ge=60, le=180),
+    current_user: UserModel = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    parcel = _ensure_parcel(db=db, parcel_id=parcel_id)
+    check_parcel_permission(db=db, current_user=current_user, parcel_id=parcel_id, permission=ParcelPermission.EXPORT_DATA)
+    _check_export_consent(db=db, parcel_id=parcel_id, current_user=current_user)
+    content = PublicationService().generate(_build_report(db=db, parcel_id=parcel_id), width_mm=width_mm)
+    return StreamingResponse(BytesIO(content), media_type='application/zip', headers={
+        'Content-Disposition': f'attachment; filename="{_safe_filename(parcel.name)}_publication.zip"'
+    })

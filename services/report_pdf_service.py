@@ -2007,6 +2007,16 @@ class ReportPDFService:
             ml_table
         )
 
+        if report.get("publication_admin"):
+            from services.publication_service import table_explanation
+            explained = []
+            for element in story:
+                explained.append(element)
+                if isinstance(element, Table):
+                    headers = [getattr(cell, 'text', str(cell)) for cell in element._cellvalues[0]]
+                    explained.append(self._paragraph(table_explanation(headers, max(0, len(element._cellvalues) - 1)), styles["BodyText"]))
+                    explained.append(Spacer(1, 8))
+            story = explained
         document.build(
             story
         )

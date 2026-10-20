@@ -1177,6 +1177,15 @@ class ReportExcelService:
 
         buffer = BytesIO()
 
+        if report.get("publication_admin"):
+            from services.publication_service import table_explanation
+            for item in workbook:
+                headers = [cell.value for cell in item[1]]
+                item.append([])
+                item.append([table_explanation(headers, max(0, item.max_row - 1))])
+                item.cell(item.max_row, 1).alignment = Alignment(wrap_text=True, vertical="top")
+                item.row_dimensions[item.max_row].height = 110
+
         workbook.save(
             buffer
         )

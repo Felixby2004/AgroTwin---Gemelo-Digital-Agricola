@@ -1,0 +1,7 @@
+Figuras generadas por las funciones reales de ml.reporting que usa app_streamlit.crisp_dm_panel.
+Fuente: artefactos NOAA USCRN locales en artifacts/ml/crisp_dm. No se usó el seed simulado de Neon en las métricas.
+PNG:600dpi; ancho85mm. Se incluyen SVG/PDF vectoriales y tablas CSV.
+Fig4:model_selection_figure. Fig5:bootstrap. Fig6:final_timeseries. Fig7:permutation_importance. Fig8:shap_global.
+cv_figure se entrega como material adicional. Las figuras1,2,3 y9 del artículo se conservan del manuscrito original.
+manifest.json contiene interpretaciones, explicaciones y SHA256 de los CSV/JSON de origen.
+No hubo reentrenamiento: se reutilizó el modelo guardado, se recalculó permutación/SHAP con las muestras y semillas originales.

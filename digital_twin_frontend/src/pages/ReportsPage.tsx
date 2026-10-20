@@ -1,3 +1,4 @@
+import { PublicationPanel } from "../components/publication/PublicationPanel";
 import {
   useEffect,
   useState,
@@ -427,6 +428,7 @@ export function ReportsPage() {
         </select>
 
       </section>
+      <PublicationPanel parcelId={selectedParcelId} />
 
 
       {error && (

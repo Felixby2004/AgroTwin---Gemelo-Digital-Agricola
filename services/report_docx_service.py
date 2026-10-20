@@ -1516,6 +1516,15 @@ class ReportDOCXService:
 
         buffer = BytesIO()
 
+        if report.get("publication_admin"):
+            from services.publication_service import table_explanation
+            for item in document.tables:
+                headers = [cell.text for cell in item.rows[0].cells]
+                note = document.add_paragraph(table_explanation(headers, len(item.rows) - 1))
+                for run in note.runs:
+                    run.font.size = Pt(8)
+                item._tbl.addnext(note._p)
+
         document.save(
             buffer
         )

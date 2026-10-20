@@ -1,0 +1,333 @@
+{
+  "source_module": "ml.reporting",
+  "consumer": "app_streamlit.crisp_dm_panel",
+  "width_mm": 85,
+  "dpi": 600,
+  "data_source": "NOAA USCRN AZ_Yuma_27_ENE; artefactos CRISP-DM existentes, separados de Neon simulado",
+  "items": [
+    {
+      "key": "model_selection_table",
+      "title": "Tabla · Comparación de modelos en validación 2024",
+      "kind": "table",
+      "interpretation": "Extra Trees fue seleccionado entre los modelos ML utilizando MAE como criterio principal y RMSE como criterio secundario. La selección se realizó exclusivamente con la validación temporal de 2024; el año 2025 permaneció aislado.",
+      "explainability": "MAE mide el error absoluto promedio; RMSE penaliza más los errores grandes; R² cuantifica la proporción de variabilidad explicada. La tabla debe interpretarse conjuntamente y no usando una única métrica de forma aislada.",
+      "records": [
+        {
+          "model_name": "Extra Trees",
+          "mae": 0.0037644770485754,
+          "rmse": 0.0097829775408561,
+          "r2": 0.9203981815772908,
+          "bias": -9.184797696831657e-05,
+          "mae_improvement_vs_persistence_percent": -7.40263517001946,
+          "rmse_improvement_vs_persistence_percent": 1.4101206145266318
+        },
+        {
+          "model_name": "Ridge",
+          "mae": 0.0037821026473994,
+          "rmse": 0.009372488885577,
+          "r2": 0.926938136669198,
+          "bias": -0.0003087584231981,
+          "mae_improvement_vs_persistence_percent": -7.9055033601344675,
+          "rmse_improvement_vs_persistence_percent": 5.5469007353095074
+        },
+        {
+          "model_name": "Random Forest",
+          "mae": 0.0047072332062471,
+          "rmse": 0.0125030276519055,
+          "r2": 0.8699796714258057,
+          "bias": 0.0008776543858841,
+          "mae_improvement_vs_persistence_percent": -34.2999955072321,
+          "rmse_improvement_vs_persistence_percent": -26.00171910920299
+        },
+        {
+          "model_name": "Hist Gradient Boosting",
+          "mae": 0.0070393177484092,
+          "rmse": 0.019010819138498,
+          "r2": 0.6994044575083127,
+          "bias": 0.0027499140012596,
+          "mae_improvement_vs_persistence_percent": -100.83567152158494,
+          "rmse_improvement_vs_persistence_percent": -91.58526717005364
+        }
+      ]
+    },
+    {
+      "key": "model_selection_figure",
+      "title": "Figura · MAE y RMSE de modelos candidatos",
+      "kind": "figure",
+      "interpretation": "La comparación visual confirma que los modelos candidatos presentan comportamientos distintos según MAE y RMSE. La selección no debe reducirse únicamente a la apariencia del gráfico, sino que debe complementarse con validación cruzada y pruebas estadísticas.",
+      "explainability": "Todos los modelos utilizan las mismas 25 variables de entrada, el mismo target de cambio a +24 h y la misma partición temporal. Por ello, las diferencias observadas se atribuyen al comportamiento del algoritmo bajo una comparación controlada."
+    },
+    {
+      "key": "cv_table",
+      "title": "Tabla · Validación cruzada temporal",
+      "kind": "table",
+      "interpretation": "La validación cruzada temporal muestra la estabilidad de los modelos a través de varios segmentos cronológicos. Persistencia presenta un MAE medio ligeramente menor que Extra Trees, mientras que Extra Trees presenta un RMSE medio ligeramente inferior.",
+      "explainability": "Los folds utilizan ventanas temporales expansivas y un gap de 24 filas entre entrenamiento y validación. Esto reduce el riesgo de contaminación asociado con el horizonte predictivo de +24 h.",
+      "records": [
+        {
+          "model_name": "Persistence",
+          "mae_mean": 0.00366602739726024,
+          "mae_std": 0.0016132981196791492,
+          "rmse_mean": 0.010641057423126921,
+          "rmse_std": 0.00444297289362029,
+          "r2_mean": 0.8278816941411262,
+          "r2_std": 0.06278150731073213
+        },
+        {
+          "model_name": "Extra Trees",
+          "mae_mean": 0.00373182792117124,
+          "mae_std": 0.0012553177917445394,
+          "rmse_mean": 0.0103519514061383,
+          "rmse_std": 0.003604869528019827,
+          "r2_mean": 0.8283348669012088,
+          "r2_std": 0.05532667481437704
+        },
+        {
+          "model_name": "Ridge",
+          "mae_mean": 0.00388582561996846,
+          "mae_std": 0.0011598854234969882,
+          "rmse_mean": 0.01105942648490072,
+          "rmse_std": 0.0039107980724379585,
+          "r2_mean": 0.8001616653041367,
+          "r2_std": 0.09170306024017268
+        },
+        {
+          "model_name": "Random Forest",
+          "mae_mean": 0.004134526837649579,
+          "mae_std": 0.0008500791770032089,
+          "rmse_mean": 0.01182050688788452,
+          "rmse_std": 0.0027739526232318807,
+          "r2_mean": 0.6749966843599977,
+          "r2_std": 0.3631947292317417
+        },
+        {
+          "model_name": "Hist Gradient Boosting",
+          "mae_mean": 0.00514555998385712,
+          "mae_std": 0.0017930969905028422,
+          "rmse_mean": 0.013427419419256039,
+          "rmse_std": 0.004746049000698193,
+          "r2_mean": 0.3751295284105124,
+          "r2_std": 1.0271610412143244
+        }
+      ]
+    },
+    {
+      "key": "cv_figure",
+      "title": "Figura · Error por fold temporal",
+      "kind": "figure",
+      "interpretation": "El rendimiento cambia entre períodos, lo que confirma que la dificultad del pronóstico de humedad no es constante en el tiempo. Por ello es más apropiado evaluar múltiples ventanas temporales que depender de una división aleatoria convencional.",
+      "explainability": "Cada punto representa el MAE obtenido después de entrenar únicamente con observaciones anteriores al bloque evaluado. Ningún fold utiliza información futura para entrenar."
+    },
+    {
+      "key": "final_holdout_table",
+      "title": "Tabla · Prueba final no observada 2025",
+      "kind": "table",
+      "interpretation": "En el holdout 2025, Extra Trees obtiene menor MAE y RMSE y mayor R² que persistencia. Este resultado es especialmente relevante porque 2025 no participó en el entrenamiento, ajuste ni selección del candidato.",
+      "explainability": "La prueba final mide generalización temporal en observaciones completamente posteriores al proceso de selección. Las métricas no modifican el motor de decisión de AgroTwin; evalúan únicamente el predictor complementario.",
+      "records": [
+        {
+          "model_name": "Extra Trees",
+          "mae": 0.0030264119937,
+          "rmse": 0.010533766981145,
+          "r2": 0.8680231719522133,
+          "bias": 0.0001750444695735
+        },
+        {
+          "model_name": "Persistence",
+          "mae": 0.0032111836828234,
+          "rmse": 0.0114835886605741,
+          "r2": 0.8431496371467232,
+          "bias": -0.0001462129024865
+        }
+      ]
+    },
+    {
+      "key": "final_timeseries",
+      "title": "Figura · Observado vs predicho en el holdout 2025",
+      "kind": "figure",
+      "interpretation": "La serie agregada diariamente permite observar si el modelo reproduce la dinámica general de humedad durante 2025. El modelo seleccionado sigue gran parte de la trayectoria observada, aunque existen episodios donde la magnitud del error aumenta.",
+      "explainability": "Para mejorar la legibilidad se representa el promedio diario, pero las métricas finales se calculan sobre las observaciones horarias. El modelo predice Δ humedad a 24 horas y luego reconstruye la humedad absoluta futura."
+    },
+    {
+      "key": "bootstrap",
+      "title": "Figura · Intervalos bootstrap del beneficio predictivo",
+      "kind": "figure",
+      "interpretation": "El intervalo bootstrap del MAE cruza cero, por lo que la mejora media absoluta no es concluyente. El intervalo del RMSE permanece completamente por debajo de cero, lo que indica una reducción consistente de errores de mayor magnitud en el holdout 2025.",
+      "explainability": "Los intervalos se obtienen mediante 2000 remuestreos por bloques diarios. Valores negativos significan menor error del modelo seleccionado frente a persistencia."
+    },
+    {
+      "key": "statistical_tests",
+      "title": "Tabla · Pruebas estadísticas rigurosas",
+      "kind": "table",
+      "interpretation": "El test de Friedman detectó diferencias globales entre los métodos (p=2.054e-57). Sin embargo, las comparaciones pareadas muestran que la evidencia de superioridad depende del comparador y del test utilizado.",
+      "explainability": "Wilcoxon utiliza errores medios diarios para reducir la falsa independencia entre horas. La corrección Holm controla el error por comparaciones múltiples. Diebold-Mariano contrasta diferencias de pérdida predictiva con corrección HAC/Newey-West para dependencia serial.",
+      "records": [
+        {
+          "selected_model": "Extra Trees",
+          "comparator": "persistence",
+          "selected_daily_mae": 0.0037283657073302,
+          "comparator_daily_mae": 0.0036625455871626,
+          "selected_daily_win_rate_percent": 36.54266958424508,
+          "wilcoxon_p_holm": 4.628947498132336e-08,
+          "dm_p_holm": 0.4649467904608215,
+          "wilcoxon_significant_005": true,
+          "dm_significant_005": false
+        },
+        {
+          "selected_model": "Extra Trees",
+          "comparator": "ridge",
+          "selected_daily_mae": 0.0037283657073302,
+          "comparator_daily_mae": 0.0038825273726259,
+          "selected_daily_win_rate_percent": 59.29978118161926,
+          "wilcoxon_p_holm": 6.134113549951013e-06,
+          "dm_p_holm": 0.2783068544313614,
+          "wilcoxon_significant_005": true,
+          "dm_significant_005": false
+        },
+        {
+          "selected_model": "Extra Trees",
+          "comparator": "random_forest",
+          "selected_daily_mae": 0.0037283657073302,
+          "comparator_daily_mae": 0.0041308356396965,
+          "selected_daily_win_rate_percent": 50.87527352297593,
+          "wilcoxon_p_holm": 0.215478382521258,
+          "dm_p_holm": 0.0069286326134586,
+          "wilcoxon_significant_005": false,
+          "dm_significant_005": true
+        },
+        {
+          "selected_model": "Extra Trees",
+          "comparator": "hist_gradient_boosting",
+          "selected_daily_mae": 0.0037283657073302,
+          "comparator_daily_mae": 0.0051396816347076,
+          "selected_daily_win_rate_percent": 64.33260393873084,
+          "wilcoxon_p_holm": 4.951483079574725e-21,
+          "dm_p_holm": 4.861757280923181e-07,
+          "wilcoxon_significant_005": true,
+          "dm_significant_005": true
+        }
+      ]
+    },
+    {
+      "key": "permutation_importance",
+      "title": "Figura · Importancia por permutación",
+      "kind": "figure",
+      "interpretation": "Las variables situadas en la parte superior son aquellas cuya alteración deteriora más el desempeño predictivo del modelo. Esto permite identificar qué información histórica o meteorológica resulta más relevante para la predicción a +24 horas.",
+      "explainability": "Permutation Importance mide la caída de rendimiento cuando una variable se desordena mientras las demás permanecen intactas. A diferencia de la importancia interna de árboles, es una medida independiente de la forma en que el algoritmo construye sus nodos."
+    },
+    {
+      "key": "shap_global",
+      "title": "Figura · Explicabilidad global SHAP",
+      "kind": "figure",
+      "interpretation": "El gráfico muestra qué variables tienen mayor contribución promedio a las predicciones del modelo seleccionado. Una mayor magnitud SHAP indica mayor influencia sobre el cambio de humedad predicho.",
+      "explainability": "Los valores SHAP descomponen la predicción del cambio de humedad a +24 horas en contribuciones atribuibles a cada variable. El gráfico utiliza el valor absoluto medio, por lo que mide magnitud de influencia y no dirección causal."
+    },
+    {
+      "key": "shap_local",
+      "title": "Tabla · Explicación SHAP de una predicción individual",
+      "kind": "table",
+      "interpretation": "La tabla identifica las variables que más influyeron en una predicción individual del holdout. Valores SHAP positivos desplazan el cambio de humedad hacia valores mayores; valores negativos lo desplazan hacia valores menores.",
+      "explainability": "Esta es una explicación local: describe una predicción concreta y no debe generalizarse automáticamente a todas las observaciones. La salida explicada es soil_moisture_change_24h.",
+      "records": [
+        {
+          "feature": "soil_moisture",
+          "input_value": 0.089,
+          "shap_value": -0.0009947135204671,
+          "absolute_shap": 0.0009947135204671,
+          "direction": "DECREASE_DELTA"
+        },
+        {
+          "feature": "relative_humidity",
+          "input_value": 14.0,
+          "shap_value": -0.0008124325758288,
+          "absolute_shap": 0.0008124325758288,
+          "direction": "DECREASE_DELTA"
+        },
+        {
+          "feature": "humidity_6h_mean",
+          "input_value": 14.666666666666666,
+          "shap_value": -0.0005654710151631,
+          "absolute_shap": 0.0005654710151631,
+          "direction": "DECREASE_DELTA"
+        },
+        {
+          "feature": "doy_cos",
+          "input_value": 0.999768818762748,
+          "shap_value": 0.0004543164400334,
+          "absolute_shap": 0.0004543164400334,
+          "direction": "INCREASE_DELTA"
+        },
+        {
+          "feature": "hour_cos",
+          "input_value": 0.965925826289068,
+          "shap_value": 0.0004311594607776,
+          "absolute_shap": 0.0004311594607776,
+          "direction": "INCREASE_DELTA"
+        },
+        {
+          "feature": "doy_sin",
+          "input_value": -0.0215013727408137,
+          "shap_value": 0.000262894032834,
+          "absolute_shap": 0.000262894032834,
+          "direction": "INCREASE_DELTA"
+        },
+        {
+          "feature": "temperature_6h_mean",
+          "input_value": 21.73333333333333,
+          "shap_value": 0.0001918714575484,
+          "absolute_shap": 0.0001918714575484,
+          "direction": "INCREASE_DELTA"
+        },
+        {
+          "feature": "soil_moisture_lag_24h",
+          "input_value": 0.091,
+          "shap_value": 0.0001887890914867,
+          "absolute_shap": 0.0001887890914867,
+          "direction": "INCREASE_DELTA"
+        },
+        {
+          "feature": "soil_moisture_lag_12h",
+          "input_value": 0.089,
+          "shap_value": -0.0001405854432287,
+          "absolute_shap": 0.0001405854432287,
+          "direction": "DECREASE_DELTA"
+        },
+        {
+          "feature": "rainfall_6h",
+          "input_value": 0.0,
+          "shap_value": -0.0001066600114603,
+          "absolute_shap": 0.0001066600114603,
+          "direction": "DECREASE_DELTA"
+        },
+        {
+          "feature": "rainfall_24h",
+          "input_value": 0.0,
+          "shap_value": -9.628652127029248e-05,
+          "absolute_shap": 9.628652127029248e-05,
+          "direction": "DECREASE_DELTA"
+        },
+        {
+          "feature": "soil_moisture_lag_6h",
+          "input_value": 0.089,
+          "shap_value": -8.917262744459578e-05,
+          "absolute_shap": 8.917262744459578e-05,
+          "direction": "DECREASE_DELTA"
+        }
+      ]
+    }
+  ],
+  "artifact_sha256": {
+    "artifacts\\ml\\crisp_dm\\bootstrap_confidence_intervals.json": "08e34496ab5e428a879d2f06fd9f4d677778e09df4922e61552525c51631d89a",
+    "artifacts\\ml\\crisp_dm\\cv_fold_metrics.csv": "3fd21c9a4ebe10b97c2da022dd569384f04922c5cd3ed53c5145b4c4942379c1",
+    "artifacts\\ml\\crisp_dm\\cv_predictions.csv": "4d1ab63aaa749194a4cfea361360366ed985032893292e5587ccbb5d9c75dcf5",
+    "artifacts\\ml\\crisp_dm\\evaluation_summary.json": "199b78414a8c4e91841421603836f5a29a68f92ff0cd263faae3bb77dc2469f6",
+    "artifacts\\ml\\crisp_dm\\final_test_metrics.csv": "c51536bb5ca92fd30b814cfdbc1fa3c4b6e04c601cb14eb0c7f35917674805ce",
+    "artifacts\\ml\\crisp_dm\\final_test_predictions.csv": "caed9324d030245247d8666fcaee4818c93b7d81492d1870c49a9eb5f1b3c386",
+    "artifacts\\ml\\crisp_dm\\friedman_test.json": "7c29dc0a36340bdcf3ebf83a844193ab4492678007eb7b0aa4d28dc15ebe2b69",
+    "artifacts\\ml\\crisp_dm\\model_selection_metadata.json": "74557d77d1708724c9e712ee2cef48122506e65910f74a35aaa3a89c19694b1f",
+    "artifacts\\ml\\crisp_dm\\model_selection_results.csv": "650f64d83f56aa4cb232ac64e78deccada79507091233d3ce96e4a2c45233c2b",
+    "artifacts\\ml\\crisp_dm\\pairwise_statistical_tests.csv": "012aab2d586f295aea1e1bbe1b69cc0e0695a642357f23be06436959deefea06",
+    "artifacts\\ml\\crisp_dm\\residual_diagnostics.json": "069ebd81f43bb8124039a529e9d63da4461511cfa543f5691eb178911391d403",
+    "artifacts\\ml\\crisp_dm\\validation_predictions.csv": "49c2e434f549c605f2eb84914db5bfe052861bddb20956fdd8660538cbd5e57b"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "source": "C:\\Users\\FELIX\\Desktop\\CICLO VIII\\ING. SOFTWARE 2\\AgroTwin_ESPANOL.docx",
+  "output": "C:\\Users\\FELIX\\Desktop\\CICLO VIII\\ING. SOFTWARE 2\\PROYECTO - GEMELO DIGITAL AGRITWIN\\artifacts\\AgroTwin_ESPANOL_CRISP_DM_actualizado.docx",
+  "replaced_figures": [
+    4,
+    5
+  ],
+  "added_figures": [
+    6,
+    7,
+    8
+  ],
+  "renumbered_stability_figure": 9,
+  "added_table": "VI SHAP local",
+  "synthetic_table_renumbered": "VII",
+  "original_figures_retained": [
+    1,
+    2,
+    3,
+    9
+  ],
+  "neon_synthetic_data_used_for_crisp_metrics": false
+}

@@ -1,0 +1,29 @@
+{
+  "mode": "COMMITTED",
+  "at": "2026-10-20T13:50:03.593304+00:00",
+  "sql_sha256": "f367c26b2d62491a14271fae7509390d8ad491f70a227c81daaa22b89e61e145",
+  "users_unchanged": true,
+  "before": {
+    "parcels": 0,
+    "parcel_memberships": 0,
+    "sensors": 0,
+    "machine_evidence": 0,
+    "farmer_knowledge": 0,
+    "decision_traces": 0,
+    "data_consents": 0,
+    "data_audit_events": 0
+  },
+  "after": {
+    "parcels": 4,
+    "parcel_memberships": 20,
+    "sensors": 12,
+    "machine_evidence": 6740,
+    "farmer_knowledge": 24,
+    "decision_traces": 4,
+    "data_consents": 4,
+    "data_audit_events": 4
+  },
+  "sql_sha256_normalized_lf": "75407f48c9759653f7dd00e4ff7ec19990c43d85872a1c2285525b86d25c9f3a",
+  "idempotency_verified": true,
+  "idempotency_note": "Second execution validated inside a transaction and rolled back; before/after counts identical."
+}

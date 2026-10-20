@@ -1,3 +1,4 @@
+import { AdminPublicationTools } from "./publication/AdminPublicationTools";
 import {
   useEffect,
   useState,
@@ -484,6 +485,7 @@ export function Layout() {
 
         <main className="main-content">
           <Outlet />
+          <AdminPublicationTools />
         </main>
 
       </div>
